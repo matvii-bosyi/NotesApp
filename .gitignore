@@ -1,0 +1,6 @@
+.DS_Store
+
+/generated/prisma
+server/.env
+.GEMINI
+.tasks

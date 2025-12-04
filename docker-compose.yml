@@ -1,0 +1,30 @@
+services:
+  # server:
+  #   build:
+  #     context: ./server
+  #     dockerfile: Dockerfile
+  #   command: npm run start:dev
+  #   ports:
+  #     - '3000:3000'
+  #   volumes:
+  #     - ./server:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   depends_on:
+  #     - db
+  #   env_file:
+  #     - ./server/.env
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: notesapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
