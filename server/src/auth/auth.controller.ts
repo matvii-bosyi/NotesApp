@@ -8,7 +8,6 @@ import {
   UseGuards,
   HttpStatus,
   HttpCode,
-  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -34,15 +33,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginUserDto, @Res({ passthrough: true }) res: Response) {
     return this.authService.login(res, dto);
-  }
-
-  @Get('verify-email/:token')
-  @HttpCode(HttpStatus.OK)
-  verifyEmail(
-    @Param('token') token: string,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    return this.authService.verifyEmail(res, token);
   }
 
   @Post('refresh')

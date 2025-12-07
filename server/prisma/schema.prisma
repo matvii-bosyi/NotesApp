@@ -16,8 +16,6 @@ model User {
   password           String
   hashedRefreshToken String?
 
-  verificationToken  String? @unique @map("verification_token")
-
   notes Note[]
   tags  Tag[]
 

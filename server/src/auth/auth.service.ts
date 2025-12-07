@@ -66,20 +66,6 @@ export class AuthService {
     return this.auth(res, user.id);
   }
 
-  async verifyEmail(res: Response, token: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { verificationToken: token },
-    });
-    if (!user) throw new UnauthorizedException('Invalid token');
-
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { verificationToken: null },
-    });
-
-    return this.auth(res, user.id);
-  }
-
   async refresh(res: Response, userId: string, refreshToken: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -104,7 +90,7 @@ export class AuthService {
   async logout(res: Response, userId: string) {
     await this.prisma.user.update({
       where: { id: userId },
-      data: { hashedRefreshToken: null, verificationToken: null },
+      data: { hashedRefreshToken: null },
     });
     this.clearCookie(res);
     return true;
