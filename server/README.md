@@ -1,111 +1,134 @@
 # NotesApp Server
 
-## Опис
+## Description
 
-Це серверна частина для додатку "NotesApp", створена на фреймворку **NestJS**. Сервер надає REST API для керування нотатками, реалізує автентифікацію користувачів за допомогою JWT та взаємодіє з базою даних PostgreSQL через Prisma ORM.
+This is the backend for the "NotesApp" application, built with the **NestJS** framework. The server provides a REST API for managing notes, implements user authentication using JWT, and interacts with a PostgreSQL database via the Prisma ORM.
 
-## Основні можливості
+## Key Features
 
-*   **Автентифікація:** Реєстрація та вхід користувачів за допомогою JWT (JSON Web Tokens).
-*   **CRUD для нотаток:** Повний набір операцій (Create, Read, Update, Delete) для керування нотатками.
-*   **Прив'язка нотаток до користувача:** Кожен користувач має доступ тільки до власних нотаток.
-*   **Валідація даних:** Використання вбудованих у NestJS `Pipes` та `class-validator` для перевірки вхідних даних.
-*   **Типізація:** Проект повністю написаний на **TypeScript**.
+*   **Authentication:** User registration and login using JWT (JSON Web Tokens) with access and refresh tokens.
+*   **CRUD for Notes:** A complete set of operations (Create, Read, Update, Delete) for managing notes.
+*   **CRUD for Tags:** Operations for managing tags associated with notes.
+*   **User-Note Association:** Each user can only access their own notes and tags.
+*   **Data Validation:** Uses built-in NestJS `Pipes` and `class-validator` for input data validation.
+*   **Typing:** The project is written entirely in **TypeScript**.
 
-## Стек технологій
+## Technology Stack
 
-*   **Фреймворк:** [NestJS](https://nestjs.com/)
-*   **Мова:** [TypeScript](https://www.typescriptlang.org/)
-*   **База даних:** [PostgreSQL](https://www.postgresql.org/)
+*   **Framework:** [NestJS](https://nestjs.com/)
+*   **Language:** [TypeScript](https://www.typescriptlang.org/)
+*   **Database:** [PostgreSQL](https://www.postgresql.org/)
 *   **ORM:** [Prisma](https://www.prisma.io/)
-*   **Автентифікація:** [Passport.js](http://www.passportjs.org/) (стратегії `passport-jwt`)
-*   **Валідація:** `class-validator`, `class-transformer`
-*   **Тестування:** [Jest](https://jestjs.io/) для unit- та e2e-тестів.
-*   **Линтинг та форматування:** ESLint та Prettier.
+*   **Authentication:** [Passport.js](http://www.passportjs.org/) (`passport-jwt` strategies)
+*   **Validation:** `class-validator`, `class-transformer`
+*   **Testing:** [Jest](https://jestjs.io/) for unit and e2e tests.
+*   **Linting & Formatting:** ESLint and Prettier.
 
 ---
 
-## Початок роботи
+## Getting Started
 
-### Вимоги
+### Prerequisites
 
-*   [Node.js](https://nodejs.org/en/) (рекомендована версія LTS)
-*   [PostgreSQL](https://www.postgresql.org/download/) запущений локально або в Docker.
+*   [Node.js](https://nodejs.org/en/) (LTS version recommended)
+*   [PostgreSQL](https://www.postgresql.org/download/) running locally or in Docker.
 
-### 1. Встановлення
+### 1. Installation
 
 ```bash
-# Перейдіть у директорію сервера
+# Navigate to the server directory
 cd server
 
-# Встановіть залежності
+# Install dependencies
 npm install
 ```
 
-### 2. Налаштування середовища
+### 2. Environment Configuration
 
-Створіть файл `.env` у корені директорії `server/` за прикладом файлу `.env.example`.
+Create a `.env` file in the `server/` root directory. You can use the `.env.example` as a template.
 
 **.env.example**
 ```env
 # ------------------
 # DATABASE
 # ------------------
-# URL для підключення до вашої PostgreSQL бази даних
-# Формат: postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+# Connection URL for your PostgreSQL database
+# Format: postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 DATABASE_URL="postgresql://postgres:password@localhost:5432/notesapp?schema=public"
 
 # ------------------
 # JWT
 # ------------------
-# Секретний ключ для підпису JWT токенів.
-# Замініть на свій власний довгий та складний рядок!
+# Secret key for signing JWT access tokens.
+# Replace with your own long and complex string!
 JWT_SECRET="YOUR_SUPER_SECRET_KEY"
+JWT_EXPIRES="15m"
+
+# Secret key for signing JWT refresh tokens.
+JWT_REFRESH_SECRET="YOUR_OTHER_SUPER_SECRET_KEY"
+JWT_REFRESH_EXPIRES="7d"
+
+# ------------------
+# COOKIE
+# ------------------
+# Domain for setting the refresh token cookie
+COOKIE_DOMAIN="localhost"
 ```
 
-### 3. Міграції бази даних
+### 3. Database Migrations
 
-Після налаштування `DATABASE_URL` застосуйте Prisma-міграції, щоб створити необхідні таблиці в базі даних.
+After configuring the `DATABASE_URL`, apply the Prisma migrations to create the necessary tables in your database.
 
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate dev
 ```
 
-### 4. Запуск додатку
+### 4. Running the Application
 
 ```bash
-# Запуск у режимі розробки (з автоматичним перезапуском)
+# Start in development mode (with auto-reloading)
 npm run start:dev
 
-# Запуск у production режимі
-npm run start:prod
+# Start in production mode
+npm run start
 ```
 
-Сервер буде запущено за адресою `http://localhost:3000`.
+The server will start at `http://localhost:3000`.
 
-## Тестування
+## Testing
 
 ```bash
-# Запуск unit-тестів
+# Run unit tests
 npm run test
 
-# Запуск end-to-end тестів
+# Run end-to-end tests
 npm run test:e2e
 ```
 
-## API Ендпоінти
+## API Endpoints
 
 ### Auth
 
-*   `POST /auth/register` - Реєстрація нового користувача.
-*   `POST /auth/login` - Вхід користувача та отримання JWT токена.
+*   `POST /auth/register` - Register a new user.
+*   `POST /auth/login` - Log in a user and get JWT tokens.
+*   `POST /auth/refresh` - Refresh access token using a refresh token.
+*   `POST /auth/logout` - Log out a user.
+*   `GET /auth/me` - Get the current user's profile.
 
-### Notes (Захищені)
+### Notes (Protected)
 
-*   `GET /notes` - Отримати всі нотатки поточного користувача.
-*   `GET /notes/:id` - Отримати конкретну нотатку за її ID.
-*   `POST /notes` - Створити нову нотатку.
-*   `PATCH /notes/:id` - Оновити існуючу нотатку.
-*   `DELETE /notes/:id` - Видалити нотатку.
+*   `GET /notes` - Get all notes for the current user.
+*   `GET /notes/:id` - Get a specific note by its ID.
+*   `POST /notes` - Create a new note.
+*   `PATCH /notes/:id` - Update an existing note.
+*   `DELETE /notes/:id` - Delete a note.
+
+### Tags (Protected)
+
+*   `GET /tags` - Get all tags for the current user.
+*   `GET /tags/:id` - Get a specific tag by its ID.
+*   `POST /tags` - Create a new tag.
+*   `PATCH /tags/:id` - Update an existing tag.
+*   `DELETE /tags/:id` - Delete a tag.
 
 ---
