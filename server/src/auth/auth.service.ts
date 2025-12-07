@@ -41,6 +41,13 @@ export class AuthService {
         password: await hash(dto.password),
         name: dto.name,
       },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     return user;
