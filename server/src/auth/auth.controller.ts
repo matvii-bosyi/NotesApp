@@ -16,7 +16,6 @@ import type { Response, Request } from 'express';
 import { Authorization } from './decorators/authorization.decorator';
 import { Authorized } from './decorators/authorized.decorator';
 import type { User } from '@prisma/client';
-import { JwtAuthGuard } from './guards/jwt.guard';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 
 @Controller('auth')
@@ -43,7 +42,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard)
+  @Authorization()
   logout(
     @Res({ passthrough: true }) res: Response,
     @Authorized('id') userId: string,
